@@ -1,11 +1,13 @@
 const express = require("express");
 const dotenv = require("dotenv").config();
 const connectDB = require("./config/db");
+const cors = require("cors");
 const Campgrounds = require("./models/campgrounds");
 
 connectDB();
 const app = express();
 
+app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
