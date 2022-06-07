@@ -3,6 +3,7 @@ const dotenv = require("dotenv").config();
 const connectDB = require("./config/db");
 const cors = require("cors");
 const Campgrounds = require("./models/campgrounds");
+const Review = require("./models/review");
 
 connectDB();
 const app = express();
@@ -41,7 +42,9 @@ app.post("/campgrounds/new", async (req, res) => {
 });
 
 app.get("/campgrounds/:id", async (req, res) => {
-  const campground = await Campgrounds.findById(req.params.id);
+  const campground = await Campgrounds.findById(req.params.id).populate(
+    "reviews"
+  );
   if (campground) {
     res.status(200);
     res.json(campground);
@@ -49,6 +52,19 @@ app.get("/campgrounds/:id", async (req, res) => {
     res.status(400);
     throw new Error("Couldnt find resource with id");
   }
+});
+app.post("/campgrounds/:id/reviews", async (req, res) => {
+  const { id } = req.params;
+  const { rating, message } = req.body;
+  const campground = await Campgrounds.findById(id);
+  const review = await Review.create({
+    rating: rating,
+    message: message,
+  });
+  campground.reviews.push(review);
+  await review.save();
+  await campground.save();
+  res.json(campground);
 });
 
 app.put("/campgrounds/:id", async (req, res) => {
