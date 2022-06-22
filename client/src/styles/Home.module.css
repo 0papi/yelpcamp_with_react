@@ -1,0 +1,21 @@
+.home {
+  background-image: url("../camp-bg.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1rem;
+  height: 500px;
+  width: 100%;
+  color: #fff;
+}
+
+.home p {
+  max-width: 500px;
+  text-align: center;
+}
