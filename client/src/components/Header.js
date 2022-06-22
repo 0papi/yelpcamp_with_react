@@ -1,5 +1,14 @@
-import { Link } from "react-router-dom";
-const Header = (props) => {
+import { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+
+const Header = () => {
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const onLogout = () => {
+    localStorage.removeItem("user");
+  };
   return (
     <header className="container">
       <div className="logo">
@@ -16,12 +25,14 @@ const Header = (props) => {
           <li>
             <Link to="/campgrounds/new">New</Link>
           </li>
-          {props.user && props.user ? (
+          {user && user ? (
             <li>
-              <button className="btn">Logout</button>
+              <button className="btn" onClick={onLogout}>
+                Logout
+              </button>
             </li>
           ) : (
-            <div>
+            <div className="auth-actions">
               <li>
                 <Link to="/campgrounds/register">Register</Link>
               </li>

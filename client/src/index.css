@@ -47,7 +47,7 @@ header {
 header .nav {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1rem;
 }
 
 button {
@@ -61,6 +61,12 @@ button {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
+}
+
+.auth-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 /* for mobile */

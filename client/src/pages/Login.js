@@ -41,7 +41,7 @@ const Login = () => {
       }
       const data = await response.json();
       if (data.token) {
-        localStorage.setItem("token", JSON.stringify(data.token));
+        localStorage.setItem("user", JSON.stringify(data));
       }
       navigate("/campgrounds");
     } catch (error) {
