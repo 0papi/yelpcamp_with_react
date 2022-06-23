@@ -1,14 +1,17 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useContext } from "react";
 import { FaSignInAlt } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { AuthContext } from "../context/AuthContext";
 
 const Login = () => {
   const [formData, setFormData] = useState({
     password: "",
     email: "",
   });
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  // const navigate = useNavigate();
+  const { baseUrl, setUserData } = useContext(AuthContext);
 
   const { password, email } = formData;
 
@@ -21,31 +24,41 @@ const Login = () => {
   const onSubmit = (e) => {
     e.preventDefault();
     if (!password || !email) {
-      toast.error("Please provide all fields");
+      return toast.error("Please provide all fields");
     }
+    console.log(formData);
     const userData = { password, email };
     onLoginUser(userData);
   };
 
+  // log in the user
   const onLoginUser = async (userLogins) => {
+    console.log(userLogins);
+    setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/campgrounds/login", {
+      const response = await fetch(baseUrl + "/login", {
         headers: {
           "Content-Type": "application/json",
         },
         method: "POST",
         body: JSON.stringify(userLogins),
       });
-      if (!response.ok) {
-        throw new Error("Error logging in user");
-      }
       const data = await response.json();
-      if (data.token) {
-        localStorage.setItem("user", JSON.stringify(data));
+      if (data) {
+        setIsLoading(false);
       }
-      navigate("/campgrounds");
+      console.log(data);
+      // check if data is returned and data contains token
+      if (data && data.token) {
+        console.log(data);
+        // persist data to local storage
+        localStorage.setItem("user", JSON.stringify(data));
+        // update userData auth from context
+        setUserData(data);
+      }
     } catch (error) {
-      toast.error(error.message);
+      setIsLoading(false);
+      return toast.error(error.message);
     }
   };
 
@@ -60,7 +73,7 @@ const Login = () => {
         </div>
 
         <section className="form">
-          <form onSubmit={onSubmit}>
+          <form onSubmit={onSubmit} autoComplete="off">
             {/* email */}
             <div className="form-group">
               <input
@@ -85,11 +98,16 @@ const Login = () => {
 
             <div className="form-group">
               <button type="submit" className="btn btn-block">
-                Submit
+                {isLoading ? "Logging in..." : "Submit"}
               </button>
             </div>
           </form>
         </section>
+        {/* Sign Up */}
+        <div className="form-auth-action">
+          <p>Don't have an account?</p>
+          <Link to="/campgrounds/register">Register</Link>
+        </div>
       </section>
     </div>
   );

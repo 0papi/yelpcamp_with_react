@@ -69,6 +69,19 @@ button {
   gap: 1rem;
 }
 
+.form-auth-action {
+  margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.form-auth-action a {
+  color: rgb(64, 0, 255);
+  text-decoration: underline;
+}
+
 /* for mobile */
 
 @media screen and (max-width: 500px) {

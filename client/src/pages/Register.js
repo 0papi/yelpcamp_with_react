@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FaUser } from "react-icons/fa";
 
@@ -10,7 +10,7 @@ const Register = () => {
     password2: "",
     email: "",
   });
-  // const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const { email, username, password, password2 } = formData;
@@ -33,13 +33,14 @@ const Register = () => {
     ) {
       return toast.error("Field(s) should not be empty!");
     }
-    const userData = { username, password, email };
+    const userData = { username, password, password2, email };
 
     onRegisterUser(userData);
   };
 
   const onRegisterUser = async (userData) => {
     try {
+      setIsLoading(true);
       const response = await fetch(
         "http://localhost:5000/campgrounds/register",
         {
@@ -56,10 +57,12 @@ const Register = () => {
       }
 
       if (response.ok) {
+        setIsLoading(false);
         navigate("/campgrounds/login");
       }
     } catch (error) {
-      toast.error(error.message);
+      setIsLoading(false);
+      return toast.error(error.message);
     }
   };
   return (
@@ -73,7 +76,7 @@ const Register = () => {
         </div>
 
         <section className="form">
-          <form onSubmit={onSubmit}>
+          <form onSubmit={onSubmit} autoComplete="off">
             <div className="form-group">
               <input
                 type="text"
@@ -118,11 +121,16 @@ const Register = () => {
 
             <div className="form-group">
               <button type="submit" className="btn btn-block">
-                Submit
+                {isLoading ? "Registering user..." : "Submit"}
               </button>
             </div>
           </form>
         </section>
+        {/* Sign In */}
+        <div className="form-auth-action">
+          <p>Already have an account?</p>
+          <Link to="/campgrounds/login">Login</Link>
+        </div>
       </section>
     </>
   );

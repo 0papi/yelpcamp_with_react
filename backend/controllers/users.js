@@ -4,9 +4,13 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/user");
 
 module.exports.registerUser = asyncHandler(async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, password2 } = req.body;
 
-  if (!username || !email || !password) {
+  if (password !== password2) {
+    res.status(400);
+    throw new Error("Passwords do not match");
+  }
+  if (!username || !email || !password || !password2) {
     res.status(400);
     throw new Error("Please enter all details");
   }
@@ -37,12 +41,14 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
 
 module.exports.loginUser = asyncHandler(async (req, res) => {
   const { password, email } = req.body;
+  console.log(password, email);
   if (!password || !email) {
     res.status(400);
     throw new Error("Please provide all fields");
   }
 
   const user = await User.findOne({ email });
+  console.log(password);
   const comparePasswords = await bcrypt.compare(password, user.password);
   if (user && comparePasswords) {
     res.json({
