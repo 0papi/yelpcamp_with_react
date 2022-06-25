@@ -10,6 +10,7 @@ const CampShow = () => {
   const { id } = params;
   const [showCampground, setShowCampground] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [updateComponent, setUpdateComponent] = useState(false);
   const [error, setError] = useState(false);
   const [reviewData, setReviewData] = useState({
     rating: 1,
@@ -71,32 +72,55 @@ const CampShow = () => {
     }
     const campReview = { ...reviewData };
     onCreateReview(campReview);
-    window.location.reload();
   };
 
   // reviews creator
   const onCreateReview = async (campReview) => {
-    const res = await fetch(`http://localhost:5000/campgrounds/${id}/reviews`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify(campReview),
-    });
+    try {
+      const res = await fetch(
+        `http://localhost:5000/campgrounds/${id}/reviews`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          method: "POST",
+          body: JSON.stringify(campReview),
+        }
+      );
 
-    const data = await res.json();
-    console.log(data);
+      if (res.status === 401) {
+        throw new Error("Sorry, you must be signed in to create reviews");
+      }
+
+      const data = await res.json();
+      setUpdateComponent(true);
+      console.log(data);
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
   // Delete Reviews
   const onDeleteReview = async (reviewId) => {
-    const res = await fetch(
-      `http://localhost:5000/campgrounds/${id}/reviews/${reviewId}`,
-      {
-        method: "DELETE",
-      }
-    );
+    try {
+      const res = await fetch(
+        `http://localhost:5000/campgrounds/${id}/reviews/${reviewId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          method: "DELETE",
+        }
+      );
 
-    console.log(res);
+      if (res.status === 401) {
+        throw new Error("Sorry, you cannot delete other people's camp reviews");
+      }
+
+      console.log(res);
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
   return (
     <div className="container campShow">

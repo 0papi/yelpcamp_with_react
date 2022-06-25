@@ -1,10 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import CampgroundItem from "../components/CampgroundItem";
 import Loading from "../components/Loading";
+import { AuthContext } from "../context/AuthContext";
 
 const Campgrounds = () => {
   const [campgroundsData, setCampgroundsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const { token } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/campgrounds/login");
+    }
+  }, [token, navigate]);
 
   useEffect(() => {
     const getCampgrounds = async () => {
@@ -20,8 +31,6 @@ const Campgrounds = () => {
   if (isLoading) {
     return <Loading />;
   }
-
-  console.log(campgroundsData);
   return (
     <div className="container">
       <h2>Campgrounds Collection</h2>

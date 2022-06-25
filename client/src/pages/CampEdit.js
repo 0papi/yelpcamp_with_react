@@ -1,15 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 import { FaPen } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { ThreeDots } from "react-loader-spinner";
 
 const CampEdit = () => {
   const [campground, setCampground] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const { token } = useContext(AuthContext);
   const params = useParams();
   const navigate = useNavigate();
 
   // extract id from params
   const { id } = params;
 
+  // check if user is logged in, otherwise redirect them to login
+  useEffect(() => {
+    if (!token) {
+      navigate("/campgrounds/login");
+    }
+  }, [token, navigate]);
   // fetch campground using id
   useEffect(() => {
     const getCampground = async () => {
@@ -40,17 +51,29 @@ const CampEdit = () => {
 
   // create function that handles put request to the backend
   const onCreateCampground = async (campData) => {
-    const res = await fetch(`http://localhost:5000/campgrounds/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "PUT",
-      body: JSON.stringify(campData),
-    });
+    setIsLoading(true);
+    try {
+      const res = await fetch(`http://localhost:5000/campgrounds/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        method: "PUT",
+        body: JSON.stringify(campData),
+      });
 
-    const data = await res.json();
-    console.log(data);
-    navigate("/campgrounds");
+      if (res.status === 401) {
+        throw new Error("Sorry, you are not authorized");
+      }
+
+      const data = await res.json();
+      setIsLoading(false);
+      console.log(data);
+      navigate("/campgrounds");
+    } catch (error) {
+      setIsLoading(false);
+      return toast.error(error.message);
+    }
   };
 
   return (
@@ -113,7 +136,11 @@ const CampEdit = () => {
         </div>
 
         <button type="submit" className="newCamp_btn">
-          Update Campground
+          {isLoading ? (
+            <ThreeDots color="#FFF" height={40} width={40} />
+          ) : (
+            "Update Campground"
+          )}
         </button>
       </form>
     </div>

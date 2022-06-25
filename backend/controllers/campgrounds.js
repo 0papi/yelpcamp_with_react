@@ -81,7 +81,6 @@ module.exports.createReview = asyncHandler(async (req, res) => {
 module.exports.deleteCampground = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const camp = await Campgrounds.findById(id);
-  console.log(camp.author);
   if (!camp.author.equals(req.user._id)) {
     res.status(401);
     throw new Error("User not authorized");
