@@ -50,6 +50,7 @@ module.exports.loginUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
   console.log(password);
   const comparePasswords = await bcrypt.compare(password, user.password);
+  console.log(comparePasswords);
   if (user && comparePasswords) {
     res.json({
       _id: user._id,

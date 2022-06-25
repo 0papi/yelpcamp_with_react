@@ -1,7 +1,9 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 import CampReviews from "../components/CampReviews";
 import Loading from "../components/Loading";
+import { toast } from "react-toastify";
 
 const CampShow = () => {
   const params = useParams();
@@ -14,6 +16,7 @@ const CampShow = () => {
     message: "",
   });
   const navigate = useNavigate();
+  const { token } = useContext(AuthContext);
 
   useEffect(() => {
     const getCampground = async () => {
@@ -33,12 +36,20 @@ const CampShow = () => {
   }
 
   const onDeleteCampground = async () => {
-    const res = await fetch(`http://localhost:5000/campgrounds/${id}`, {
-      method: "DELETE",
-    });
-    const data = await res.json();
-    console.log(data);
-    navigate("/campgrounds");
+    try {
+      const res = await fetch(`http://localhost:5000/campgrounds/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        method: "DELETE",
+      });
+      if (res.status === 401) {
+        throw new Error("Sorry, you are not authorized");
+      }
+      const data = await res.json();
+      console.log(data);
+      navigate("/campgrounds");
+    } catch (error) {
+      return toast.error(error.message);
+    }
   };
 
   const { title, description, location, image, price, reviews } =

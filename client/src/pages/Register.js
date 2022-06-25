@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FaUser } from "react-icons/fa";
+import { ThreeDots } from "react-loader-spinner";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -121,7 +122,11 @@ const Register = () => {
 
             <div className="form-group">
               <button type="submit" className="btn btn-block">
-                {isLoading ? "Registering user..." : "Submit"}
+                {isLoading ? (
+                  <ThreeDots color="#FFF" height={40} width={40} />
+                ) : (
+                  "Submit"
+                )}
               </button>
             </div>
           </form>

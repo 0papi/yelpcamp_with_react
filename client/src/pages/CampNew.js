@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 import { FaPlus } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { ThreeDots } from "react-loader-spinner";
 
 const CampNew = () => {
   const [campgroundData, setCampgroundData] = useState({
@@ -10,7 +13,8 @@ const CampNew = () => {
     location: "",
     price: 0,
   });
-
+  const [isLoading, setIsLoading] = useState(false);
+  const { token } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const { title, image, description, location, price } = campgroundData;
@@ -29,9 +33,11 @@ const CampNew = () => {
   };
 
   const onCreateCampground = async (campData) => {
+    setIsLoading(true);
     try {
       const res = await fetch("http://localhost:5000/campgrounds/new", {
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         method: "POST",
@@ -39,10 +45,12 @@ const CampNew = () => {
       });
 
       const data = await res.json();
+      setIsLoading(false);
       console.log(data);
       navigate("/campgrounds");
     } catch (error) {
-      console.log(error.message);
+      setIsLoading(false);
+      toast.error(error.message);
       navigate("/campgrounds/register");
     }
   };
@@ -107,7 +115,11 @@ const CampNew = () => {
         </div>
 
         <button type="submit" className="newCamp_btn">
-          Add Campground
+          {isLoading ? (
+            <ThreeDots color="#FFF" height={40} width={40} />
+          ) : (
+            "Add Campground"
+          )}
         </button>
       </form>
     </div>
