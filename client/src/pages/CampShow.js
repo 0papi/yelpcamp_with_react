@@ -1,6 +1,7 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import useDeleteCamp from "../hooks/useDeleteCamp";
 import CampReviews from "../components/CampReviews";
 import Loading from "../components/Loading";
 import { toast } from "react-toastify";
@@ -9,8 +10,8 @@ const CampShow = () => {
   const params = useParams();
   const { id } = params;
   const [showCampground, setShowCampground] = useState([]);
+  const [campReview, setCampReview] = useState();
   const [isLoading, setIsLoading] = useState(true);
-  const [updateComponent, setUpdateComponent] = useState(false);
   const [error, setError] = useState(false);
   const [reviewData, setReviewData] = useState({
     rating: 1,
@@ -18,6 +19,11 @@ const CampShow = () => {
   });
   const navigate = useNavigate();
   const { token } = useContext(AuthContext);
+
+  const { deleteCamp, isOk, isError, errorMsg } = useDeleteCamp(
+    `http://localhost:5000/campgrounds/${id}`,
+    token
+  );
 
   useEffect(() => {
     const getCampground = async () => {
@@ -36,20 +42,30 @@ const CampShow = () => {
     return <Loading />;
   }
 
-  const onDeleteCampground = async () => {
-    try {
-      const res = await fetch(`http://localhost:5000/campgrounds/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        method: "DELETE",
-      });
-      if (res.status === 401) {
-        throw new Error("Sorry, you are not authorized");
-      }
-      const data = await res.json();
-      console.log(data);
+  const onDeleteCampground = () => {
+    // try {
+    //   const res = await fetch(`http://localhost:5000/campgrounds/${id}`, {
+    //     headers: { Authorization: `Bearer ${token}` },
+    //     method: "DELETE",
+    //   });
+    //   if (res.status === 401) {
+    //     throw new Error("Sorry, you are not authorized");
+    //   }
+    //   const data = await res.json();
+    //   console.log(data);
+    //   navigate("/campgrounds");
+    // } catch (error) {
+    //   return toast.error(error.message);
+    // }
+
+    deleteCamp();
+
+    if (isOk) {
       navigate("/campgrounds");
-    } catch (error) {
-      return toast.error(error.message);
+    }
+
+    if (isError) {
+      toast.error(errorMsg);
     }
   };
 
@@ -92,10 +108,10 @@ const CampShow = () => {
       if (res.status === 401) {
         throw new Error("Sorry, you must be signed in to create reviews");
       }
-
       const data = await res.json();
-      setUpdateComponent(true);
-      console.log(data);
+      if (data) {
+        setCampReview(data);
+      }
     } catch (error) {
       toast.error(error.message);
     }
@@ -117,6 +133,9 @@ const CampShow = () => {
         throw new Error("Sorry, you cannot delete other people's camp reviews");
       }
 
+      if (res.ok) {
+        navigate(`/campgrounds/${id}`);
+      }
       console.log(res);
     } catch (error) {
       toast.error(error.message);
@@ -169,11 +188,7 @@ const CampShow = () => {
               value={message}
               onChange={onChange}
             ></textarea>
-            {error && (
-              <p className={error && "error"}>
-                Please reviews cannot be empty. Type something!
-              </p>
-            )}
+            {error && <p className={error && "error"}>Please leave a review</p>}
           </div>
           <button className="campgroundItem_btn btn-green" type="submit">
             Submit
@@ -186,6 +201,7 @@ const CampShow = () => {
           <CampReviews
             reviews={reviews}
             deleteReviewFunction={onDeleteReview}
+            campReview={campReview}
           />
         )}
       </div>
