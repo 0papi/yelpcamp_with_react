@@ -1,7 +1,9 @@
 const express = require("express");
-const dotenv = require("dotenv").config();
 const connectDB = require("./config/db");
 const cors = require("cors");
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 
 const campRoutes = require("./routes/campRoutes");
 const userRoutes = require("./routes/userRoutes");

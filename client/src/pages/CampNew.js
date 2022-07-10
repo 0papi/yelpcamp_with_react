@@ -61,7 +61,7 @@ const CampNew = () => {
         <FaPlus />
         <h2>Create a new campground</h2>
       </div>
-      <form onSubmit={onSubmit} className="form">
+      <form onSubmit={onSubmit} className="form" encType="multipart/form-data">
         <div className="form-group">
           <label htmlFor="title">Title</label>
           <input
@@ -109,6 +109,7 @@ const CampNew = () => {
             type="text"
             name="description"
             value={description}
+            id="description"
             placeholder="camp description"
             onChange={onChange}
           />

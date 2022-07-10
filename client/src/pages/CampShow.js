@@ -43,21 +43,6 @@ const CampShow = () => {
   }
 
   const onDeleteCampground = () => {
-    // try {
-    //   const res = await fetch(`http://localhost:5000/campgrounds/${id}`, {
-    //     headers: { Authorization: `Bearer ${token}` },
-    //     method: "DELETE",
-    //   });
-    //   if (res.status === 401) {
-    //     throw new Error("Sorry, you are not authorized");
-    //   }
-    //   const data = await res.json();
-    //   console.log(data);
-    //   navigate("/campgrounds");
-    // } catch (error) {
-    //   return toast.error(error.message);
-    // }
-
     deleteCamp();
 
     if (isOk) {

@@ -1,12 +1,14 @@
 const express = require("express");
+const upload = require("../upload/common");
+
 const {
   index,
   newCampground,
   singleCampground,
   createReview,
   deleteCampground,
-  updateCampground,
   deleteCampgroundReview,
+  updateCampground,
 } = require("../controllers/campgrounds");
 const protect = require("../middleware/authMiddleware");
 const router = express.Router();
