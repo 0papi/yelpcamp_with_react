@@ -4,6 +4,7 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/user");
 const VerificationToken = require("../models/verifyToken");
 const { generateOTP, mailTransport } = require("../utils/mail");
+const sendEmail = require("../utils/sendEmail");
 const { isValidObjectId } = require("mongoose");
 
 module.exports.registerUser = asyncHandler(async (req, res) => {
@@ -41,12 +42,7 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
   await verificationToken.save();
   await user.save();
 
-  mailTransport().sendMail({
-    from: "emailVerfication@email.com",
-    to: user.email,
-    subject: "Verify your emai l account",
-    html: `<h1>${OTP}</h1>`,
-  });
+  await sendEmail(user.email, "Email verification token", OTP);
 
   if (user) {
     res.json({
@@ -133,7 +129,7 @@ exports.verifyEmail = asyncHandler(async (req, res) => {
   mailTransport().sendMail({
     from: "emailVerfication@email.com",
     to: user.email,
-    subject: "Verify your emai l account",
+    subject: "Verify your email account",
     html: `<h1>Email verified successfully thank you for connecting with us</h1>`,
   });
 

@@ -1,4 +1,4 @@
-const nodemailer = require("nodemailer");
+// const nodemailer = require("nodemailer");
 
 module.exports.generateOTP = () => {
   let otp = "";
@@ -10,12 +10,12 @@ module.exports.generateOTP = () => {
   return otp;
 };
 
-module.exports.mailTransport = () =>
-  nodemailer.createTransport({
-    host: "smtp.mailtrap.io",
-    port: 2525,
-    auth: {
-      user: process.env.SMTP_USERNAME,
-      pass: process.env.SMTP_PASSWORD || "84ec34ec6bb43b",
-    },
-  });
+// module.exports.mailTransport = () =>
+//   nodemailer.createTransport({
+//     host: "smtp.mailtrap.io",
+//     port: 2525,
+//     auth: {
+//       user: process.env.SMTP_USERNAME,
+//       pass: process.env.SMTP_PASSWORD || "84ec34ec6bb43b",
+//     },
+//   });
