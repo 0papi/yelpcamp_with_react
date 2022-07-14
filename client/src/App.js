@@ -11,6 +11,7 @@ import CampEdit from "./pages/CampEdit";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import AuthProvider from "./context/AuthContext";
+import VerifyEmail from "./pages/VerifyEmail";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             <Route path="/campgrounds/login" element={<Login />} />
             <Route path="/campgrounds/:id" element={<CampShow />} />
             <Route path="/campgrounds/:id/edit" element={<CampEdit />} />
+            <Route path="/campgrounds/verify-email" element={<VerifyEmail />} />
           </Routes>
           <Footer />
         </AuthProvider>

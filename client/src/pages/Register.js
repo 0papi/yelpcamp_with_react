@@ -57,10 +57,25 @@ const Register = () => {
         throw new Error("Error registering user");
       }
 
-      if (response.ok) {
+      const data = await response.json();
+      console.log(data);
+
+      if (data) {
+        localStorage.setItem("userId", data._id);
         setIsLoading(false);
-        navigate("/campgrounds/login");
+        toast.success(
+          "Thanks for registering, please check your email for your verification token"
+        );
+        navigate("/campgrounds/verify-email");
       }
+
+      // if (response.ok) {
+      //   setIsLoading(false);
+      //   toast.success(
+      //     "Thank you for registering, please check your email for your verification token"
+      //   );
+      //   navigate("/campgrounds/verify-email");
+      // }
     } catch (error) {
       setIsLoading(false);
       return toast.error(error.message);

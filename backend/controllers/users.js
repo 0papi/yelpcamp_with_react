@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/user");
 const VerificationToken = require("../models/verifyToken");
-const { generateOTP, mailTransport } = require("../utils/mail");
+const { generateOTP, responseText } = require("../utils/mail");
 const sendEmail = require("../utils/sendEmail");
 const { isValidObjectId } = require("mongoose");
 
@@ -42,7 +42,11 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
   await verificationToken.save();
   await user.save();
 
-  await sendEmail(user.email, "Email verification token", OTP);
+  await sendEmail(
+    user.email,
+    "Email verification token",
+    `Thank you for choosing us. To continue, verify your account with the verification token: ${OTP}`
+  );
 
   if (user) {
     res.json({
@@ -126,12 +130,11 @@ exports.verifyEmail = asyncHandler(async (req, res) => {
   await VerificationToken.findByIdAndDelete(token._id);
   user.save();
 
-  mailTransport().sendMail({
-    from: "emailVerfication@email.com",
-    to: user.email,
-    subject: "Verify your email account",
-    html: `<h1>Email verified successfully thank you for connecting with us</h1>`,
-  });
+  await sendEmail(
+    user.email,
+    "Email verification confirmation",
+    `Your email has been verified successfully. Welcome to Campgrounds!`
+  );
 
   res.json({ success: true, message: "Your email is verified" });
 });
